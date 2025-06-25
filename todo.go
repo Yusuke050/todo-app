@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 )
 
@@ -58,9 +59,54 @@ func ListTasks() {
 }
 
 func CompleteTask(id int) {
-	panic("unimplemented")
+	tasks, err := loadTasks()
+	if err != nil {
+		panic(err)
+	}
+
+	isExist := false
+
+	for i, t := range tasks {
+		if t.ID == id {
+			tasks[i].Done = true
+			isExist = true
+			break
+		}
+	}
+
+	if !isExist {
+		fmt.Print("task not found")
+	}
+
+	if err := saveTasks(tasks); err != nil {
+		panic(err)
+	}
 }
 
 func DeleteTask(id int) {
-	panic("unimplemented")
+	tasks, err := loadTasks()
+	if err != nil {
+		panic(err)
+	}
+
+	newTasks := make([]Task, 0, len(tasks))
+	isExist := false
+
+	for _, t := range tasks {
+		if t.ID == id {
+			isExist = true
+			continue // このタスクを削除（スキップ）
+		}
+		newTasks = append(newTasks, t)
+	}
+
+	if !isExist {
+		fmt.Println("task not found")
+		return
+	}
+
+	if err := saveTasks(newTasks); err != nil {
+		panic(err)
+	}
+
 }
